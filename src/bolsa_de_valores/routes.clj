@@ -1,6 +1,8 @@
 (ns bolsa-de-valores.routes
   (:require [compojure.core :refer :all]
-            [bolsa-de-valores.controllers.transacao_controller :as transacao]))
+            [bolsa-de-valores.controllers.transacao_controller :as transacao]
+            [compojure.route :as route]
+            ))
 
 (defroutes app-routes
 
