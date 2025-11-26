@@ -1,4 +1,4 @@
-(ns bolsa-de-valores.repositories.transacao_repository)
+(ns bolsa-de-valores.repositories.transacao-repository)
 
 (def transacoes (atom []))
 
@@ -12,17 +12,15 @@
 )
 
 (defn listar-por-ticker [ticker]
-    (swap! transacoes (fn[lista]
-                        (filter (fn[transacao]
-                                    (= :ticker transacao ticker)
-                        ) transacoes)
-    ))
+    (filter (fn[transacao]
+                (= (:ticker transacao) ticker)
+    ) @transacoes)
 )
 
-(defn remover[ticker]
-    (filter (fn [transacao]
-            (= (:ticker transacao) ticker))
-          @transacoes))
+(defn remover! [ticker]
+  (swap! transacoes (fn [lista]
+                      (remove (fn [transacao]
+                                (= (:ticker transacao) ticker)) lista))))
 
 (defn limpar! []
     (reset! transacoes [])

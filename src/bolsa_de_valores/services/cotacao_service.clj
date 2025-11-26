@@ -1,5 +1,5 @@
-(ns bolsa-de-valores.services.cotacao_service
-  (:require [bolsa-de-valores.external.brapi_external :as brapi]))
+(ns bolsa-de-valores.services.cotacao-service
+  (:require [bolsa-de-valores.external.brapi-external :as brapi]))
 
 (defn consultar-preco [ticker]
   (let [resposta (brapi/consulta ticker)
@@ -26,4 +26,3 @@ variacao))
         preco-unitario (get-in resposta [:body :results 0 :regularMarketPrice])
         preco-total    (* preco-unitario qtd)]
     preco-total))
-

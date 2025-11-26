@@ -1,9 +1,6 @@
-(ns bolsa-de-valores.services.transacao_service
-  (:require [bolsa-de-valores.services.cotacao_service :as cotacao]
-            [bolsa-de-valores.repositories.transacao_repository :as repositorio]
-
-  )
-  )
+(ns bolsa-de-valores.services.transacao-service
+  (:require [bolsa-de-valores.services.cotacao-service :as cotacao]
+            [bolsa-de-valores.repositories.transacao-repository :as repositorio]))
 
 
 (defn comprar [ticker quantidade]
@@ -15,8 +12,7 @@
                    :quantidade quantidade
                    :preco preco-unitario
                    :total total
-                   :data data}
-                   ]
+                   :data data}]
     (repositorio/adicionar! transacao)
     transacao)
     )
