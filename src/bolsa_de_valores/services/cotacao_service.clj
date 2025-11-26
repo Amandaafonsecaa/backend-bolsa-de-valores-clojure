@@ -20,3 +20,10 @@
         variacao (get-in resposta [:body :results 0 :regularMarketChangePercent])
     ]
 variacao))
+
+(defn simular-compra [ticker qtd]
+  (let [resposta      (brapi/consulta ticker)
+        preco-unitario (get-in resposta [:body :results 0 :regularMarketPrice])
+        preco-total    (* preco-unitario qtd)]
+    preco-total))
+

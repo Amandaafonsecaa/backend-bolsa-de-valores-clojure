@@ -16,3 +16,4 @@
         (filter #(not= (:ticker %) ticker) lista)
     ))
 )
+
