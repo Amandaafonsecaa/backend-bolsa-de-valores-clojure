@@ -5,10 +5,6 @@
   )
   )
 
-(defn extrato []
-  (repositorio/listar)
-)
-
 (defn qtd-ticker []
   (let [transacoes (repositorio/listar)]
     (count

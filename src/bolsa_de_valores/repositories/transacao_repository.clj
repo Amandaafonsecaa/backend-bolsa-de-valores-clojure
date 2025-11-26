@@ -17,3 +17,6 @@
     ))
 )
 
+(defn limpar! []
+    (reset! transacoes [])
+)
