@@ -29,11 +29,10 @@
       (resp/internal-server-error {:erro "Erro ao processar a venda." :detalhe (.getMessage e)}))))
 
 (defn extrato [_]
-    (try
-        (let [transacoes (service/extrato)]
-            (resp/response transacoes)
-        )
-    catch Exception e
-      (resp/internal-server-error {:erro "Erro ao buscar extrato." :detalhe (.getMessage e)})
-      )
-)
+  (try
+    (resp/response (service/extrato))
+
+    (catch Exception e
+      (resp/internal-server-error
+       {:erro "Erro ao buscar extrato."
+        :detalhe (.getMessage e)}))))
