@@ -11,11 +11,18 @@
     @transacoes
 )
 
-(defn remover[ticker]
+(defn listar-por-ticker [ticker]
     (swap! transacoes (fn[lista]
-        (filter #(not= (:ticker %) ticker) lista)
+                        (filter (fn[transacao]
+                                    (= :ticker transacao ticker)
+                        ) transacoes)
     ))
 )
+
+(defn remover[ticker]
+    (filter (fn [transacao]
+            (= (:ticker transacao) ticker))
+          @transacoes))
 
 (defn limpar! []
     (reset! transacoes [])
