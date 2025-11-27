@@ -10,8 +10,8 @@
       (if (and (:ticker params) (:quantidade params))
         (let [transacao (transacao-service/comprar (:ticker params) (:quantidade params))]
           (-> (resp/response {:mensagem "Compra registrada com sucesso."
-                              :transacao transacao})
-              (resp/status 201))) 
+                             :transacao transacao})
+              (resp/status 201)))
         (resp/bad-request {:erro "Parâmetros 'ticker' ou 'quantidade' ausentes."})))
 
     (catch Exception e

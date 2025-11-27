@@ -29,8 +29,6 @@
                     [ticker (soma-saldo transacoes-do-ativo)])
                   agrupado-por-ticker))))
 
-(def qtd-atual saldo-por-ativo) ;; alias
-
 (defn valor-total-investido []
   (let [compras (filter #(= (:tipo %) :compra) (repositorio/listar))]
     (reduce + 0 (map :total compras))))

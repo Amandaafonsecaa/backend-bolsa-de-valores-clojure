@@ -17,7 +17,12 @@
                  [ring/ring-json "0.5.1"]
 
                  ;; HTTP Client para conectar ao BRAPI
-                 [clj-http "3.12.3"]]
+                 [clj-http "3.12.3"]
+                 
+                 ;; Variáveis de ambiente
+                 [environ "1.2.0"]]
+
+  :plugins [[lein-environ "1.2.0"]]
   
   :main ^:skip-aot bolsa-de-valores.core
   :target-path "target/%s"

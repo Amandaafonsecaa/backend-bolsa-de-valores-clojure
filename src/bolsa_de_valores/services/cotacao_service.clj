@@ -11,9 +11,12 @@
     {:nome        (get-in resposta [:body :results 0 :longName])
      :nome-curto  (get-in resposta [:body :results 0 :shortName])
      :moeda       (get-in resposta [:body :results 0 :currency])
-     :preco       (get-in resposta [:body :results 0 :regularMarketPrice])
-     :alta-dia    (get-in resposta [:body :results 0 :regularMarketDayHigh])
-     :baixa-dia   (get-in resposta [:body :results 0 :regularMarketDayLow])}))
+     :ultimo-preco (get-in resposta [:body :results 0 :regularMarketPrice])
+     :preco-maximo (get-in resposta [:body :results 0 :regularMarketDayHigh])
+     :preco-minimo (get-in resposta [:body :results 0 :regularMarketDayLow])
+     :preco-abertura (get-in resposta [:body :results 0 :regularMarketOpen])
+     :preco-fechamento (get-in resposta [:body :results 0 :regularMarketPreviousClose])
+     :hora-cotacao (get-in resposta [:body :results 0 :regularMarketTime])}))
 
 (defn consultar-variacao-dia [ticker]
     (let [resposta (brapi/consulta ticker)
