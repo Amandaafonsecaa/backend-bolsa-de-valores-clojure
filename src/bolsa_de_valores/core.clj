@@ -3,10 +3,6 @@
             [ring.middleware.json :refer [wrap-json-body wrap-json-response]]
             [bolsa-de-valores.routes :refer [app-routes]])
   (:gen-class))
-  (:require [ring.adapter.jetty :refer [run-jetty]]
-            [ring.middleware.json :refer [wrap-json-body wrap-json-response]]
-            [bolsa-de-valores.routes :refer [app-routes]])
-  (:gen-class))
 
 (def app
   (-> app-routes
