@@ -1,7 +1,29 @@
 (ns bolsa-de-valores.services.carteira-service
-  (:require [bolsa-de-valores.services.cotacao-service :as cotacao]
-            [bolsa-de-valores.repositories.transacao-repository :as repositorio]))
+  (:require
+   [bolsa-de-valores.repositories.transacao-repository :as repositorio]
+   [bolsa-de-valores.services.cotacao-service :as cotacao]) 
+  (:import
+   [java.time LocalDateTime]))
 
+;; helpers
+(defn- str->datetime [date-str]
+  (try
+    (if date-str
+      (LocalDateTime/parse date-str)
+      nil)
+    (catch Exception _ nil)))
+
+(defn- filtrar-por-periodo [transacoes data-inicial-str data-final-str]
+  (let [inicio (str->datetime data-inicial-str)
+        fim (str->datetime data-final-str)]
+    (filter (fn [transacao]
+              (let [data-transacao (str->datetime (:data transacao))]
+                (and data-transacao
+                     (or (nil? inicio)
+                         (not (.isBefore data-transacao inicio)))
+                     (or (nil? fim)
+                         (not (.isAfter data-transacao fim))))))
+            transacoes)))
 
 (defn soma-saldo [transacoes]
   (reduce (fn [acc transacao]
@@ -16,8 +38,11 @@
 
 ;; leitura e consultas
 
-(defn extrato []
-  (repositorio/listar))
+(defn extrato 
+  ([] (repositorio/listar))                     ;; aridade 0 é o extrato completo
+  ([data-inicio-str data-fim-str]               ;; aridade 2 é o extrato filtrado
+   (let [transacoes (repositorio/listar)]
+     (filtrar-por-periodo transacoes data-inicio-str data-fim-str))))
 
 (defn saldo-por-ativo []
   (let [transacoes (repositorio/listar)
@@ -33,15 +58,13 @@
   (let [compras (filter #(= (:tipo %) :compra) (repositorio/listar))]
     (reduce + 0 (map :total compras))))
 
-(defn lucro-ou-prejuizo []
-  (let [saldos (saldo-por-ativo)
-        valor-investido (valor-total-investido)
-        valor-atual-total (reduce (fn [valor-acumulado [ticker qtd]]
-                                    (if (pos? qtd)
-                                      (let [preco-atual (cotacao/consultar-preco ticker)
-                                            valor-ativo (* preco-atual qtd)]
-                                        (+ valor-acumulado valor-ativo))
-                                      valor-acumulado))
-                                  0
-                                  saldos)]
-    (- valor-atual-total valor-investido)))
+(defn saldo-total []
+  (let [saldos (saldo-por-ativo)]
+    (reduce (fn [valor-acc [ticker qtd]]
+              (if (pos? qtd)
+                (let [preco-atual (cotacao/consultar-preco ticker)
+                      valor-ativo (* preco-atual qtd)]
+                  (+ valor-acc valor-ativo))
+                valor-acc))
+            0
+            saldos)))

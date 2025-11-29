@@ -1,7 +1,8 @@
 (ns bolsa-de-valores.controllers.transacao-controller
   (:require [bolsa-de-valores.services.transacao-service :as transacao-service]
             [bolsa-de-valores.services.carteira-service :as carteira-service]
-            [ring.util.response :as resp]))
+            [ring.util.response :as resp]
+            [bolsa-de-valores.services.cotacao-service :as cotacao-service]))
 
 
 (defn comprar [request]
@@ -34,10 +35,14 @@
                           :detalhe (.getMessage e)})
           (resp/status 500)))))
 
-
-(defn extrato [_]
+(defn extrato [request] 
   (try
-    (resp/response (carteira-service/extrato))
+    (let [data-inicio (get-in request [:query-params :data_inicio]) 
+          data-fim (get-in request [:query-params :data_fim])] 
+      
+      (if (or data-inicio data-fim)
+        (resp/response (carteira-service/extrato data-inicio data-fim))
+        (resp/response (carteira-service/extrato))))
 
     (catch Exception e
       (-> (resp/response {:erro "Erro ao buscar extrato."
@@ -60,10 +65,22 @@
                           :detalhe (.getMessage e)})
           (resp/status 500)))))
 
-(defn lucro-prejuizo [_]
+(defn patrimonio [_]
   (try
-    (resp/response {:lucro_ou_prejuizo (carteira-service/lucro-ou-prejuizo)})
+    (resp/response {:patrimonio_liquido (carteira-service/saldo-total)})
     (catch Exception e
-      (-> (resp/response {:erro "Erro ao calcular lucro ou prejuízo."
+      (-> (resp/response {:erro "Erro ao calcular patrimônio líquido."
+                          :detalhe (.getMessage e)})
+          (resp/status 500)))))
+
+(defn consultar-dados-acao [req]
+  (try
+    (let [ticker (get-in req [:route-params :ticker])]
+      (if ticker
+        (let [detalhes (cotacao-service/consultar-detalhes ticker)]
+          (resp/response detalhes))
+        (resp/bad-request {:erro "o parâmetro ticker tá ausente"})))
+    (catch Exception e 
+      (-> (resp/response {:erro "erro ao buscar detalhes da ação"
                           :detalhe (.getMessage e)})
           (resp/status 500)))))
