@@ -1,26 +1,19 @@
 (defproject bolsa-de-valores "0.1.0-SNAPSHOT"
   :description "Backend da bolsa de valores em Clojure"
+  :url "http://example.com/FIXME"
+  :license {:name "EPL-2.0 OR GPL-2.0-or-later-with-Classpath-exception-2.0"
+            :url "https://www.eclipse.org/legal/epl-2.0/"}
+  
   :dependencies [[org.clojure/clojure "1.10.1"]
                  [org.clojure/tools.cli "1.0.206"]
-
-                 ;; Servidor HTTP (Ring)
                  [ring/ring-core "1.9.0"]
                  [ring/ring-jetty-adapter "1.9.0"]
-
-                 ;; Rotas (Compojure)
                  [compojure "1.6.2"]
-
-                 ;; JSON (Cheshire) - usado para encode/decode manual
                  [cheshire "5.10.0"]
-
-                 ;; JSON automático com wrappers
                  [ring/ring-json "0.5.1"]
-
-                 ;; HTTP Client para conectar ao BRAPI
                  [clj-http "3.12.3"]
-                 
-                 ;; Variáveis de ambiente
-                 [environ "1.2.0"]]
+                 [environ "1.2.0"]
+                 [ring-cors "0.1.13"]] ;; <--- O colchete fecha aqui!
 
   :plugins [[lein-environ "1.2.0"]]
   

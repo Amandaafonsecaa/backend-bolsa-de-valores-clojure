@@ -9,7 +9,7 @@
   (POST "/transacoes/venda"   request (transacao/vender request))
 
   (GET "/carteira/extrato" [] (transacao/extrato nil))
-
+  
   (GET "/carteira/saldo" [] (transacao/saldo-ativo nil))
   (GET "/carteira/investido" [] (transacao/valor-investido nil))
   (GET "/carteira/lucro" [] (transacao/lucro-prejuizo nil))
