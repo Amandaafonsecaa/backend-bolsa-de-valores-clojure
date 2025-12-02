@@ -20,7 +20,10 @@
                  [clj-http "3.12.3"]
                  
                  ;; Variáveis de ambiente
-                 [environ "1.2.0"]]
+                 [environ "1.2.0"]
+
+                 ;; middleware
+                 [ring-cors "0.1.13"]]
 
   :plugins [[lein-environ "1.2.0"]]
   
