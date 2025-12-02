@@ -12,8 +12,12 @@
                  [cheshire "5.10.0"]
                  [ring/ring-json "0.5.1"]
                  [clj-http "3.12.3"]
+                 
+                 ;; Variáveis de ambiente
                  [environ "1.2.0"]
-                 [ring-cors "0.1.13"]] ;; <--- O colchete fecha aqui!
+
+                 ;; middleware
+                 [ring-cors "0.1.13"]]
 
   :plugins [[lein-environ "1.2.0"]]
   
