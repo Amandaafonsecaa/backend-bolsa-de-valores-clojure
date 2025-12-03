@@ -5,7 +5,6 @@
   (:import
    [java.time LocalDateTime]))
 
-;; helpers
 (defn- str->datetime [date-str]
   (try
     (if date-str
@@ -36,23 +35,29 @@
           0
           transacoes))
 
-;; leitura e consultas
-
 (defn extrato 
-  ([] (repositorio/listar))                     ;; aridade 0 é o extrato completo
-  ([data-inicio-str data-fim-str]               ;; aridade 2 é o extrato filtrado
+  ([] (repositorio/listar))
+  ([data-inicio-str data-fim-str]
    (let [transacoes (repositorio/listar)]
      (filtrar-por-periodo transacoes data-inicio-str data-fim-str))))
 
-(defn saldo-por-ativo []
-  (let [transacoes (repositorio/listar)
-        transacoes-validas (->> transacoes
-                                (remove nil?)
-                                (filter map?))
-        agrupado-por-ticker (group-by :ticker transacoes-validas)]
-    (into {} (map (fn [[ticker transacoes-do-ativo]]
-                    [ticker (soma-saldo transacoes-do-ativo)])
-                  agrupado-por-ticker))))
+(defn saldo-por-ativo 
+  ([] (saldo-por-ativo nil))
+  ([data-limite-str]
+   (let [transacoes-brutas (repositorio/listar)
+         
+         transacoes (if data-limite-str
+                      (filtrar-por-periodo transacoes-brutas nil data-limite-str)
+                      transacoes-brutas)
+         
+         transacoes-validas (->> transacoes
+                                 (remove nil?)
+                                 (filter map?))
+         agrupado-por-ticker (group-by :ticker transacoes-validas)]
+     
+     (into {} (map (fn [[ticker transacoes-do-ativo]]
+                     [ticker (soma-saldo transacoes-do-ativo)])
+                   agrupado-por-ticker)))))
 
 (defn valor-total-investido []
   (let [compras (filter #(= (:tipo %) :compra) (repositorio/listar))]

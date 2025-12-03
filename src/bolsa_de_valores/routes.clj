@@ -16,6 +16,4 @@
   (GET "/carteira/investido" [] (transacao/valor-investido nil))
   (GET "/carteira/patrimonio" [] (transacao/patrimonio nil))
 
-  ;; (GET  "/transacoes"         request (transacao/extrato request))
-  
   (route/not-found "Rota não encontrada"))

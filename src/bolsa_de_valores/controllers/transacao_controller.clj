@@ -7,33 +7,46 @@
 
 (defn comprar [request]
   (try
-    (let [params (:body request)]
-      (if (and (:ticker params) (:quantidade params))
-        (let [transacao (transacao-service/comprar (:ticker params) (:quantidade params))]
+    (let [params (:body request)
+          ticker (:ticker params)
+          quantidade (:quantidade params)
+          data (:data params)]
+      
+      (if (and ticker quantidade data) 
+        (let [transacao (transacao-service/comprar ticker quantidade data)]
           (-> (resp/response {:mensagem "Compra registrada com sucesso."
                              :transacao transacao})
               (resp/status 201)))
-        (resp/bad-request {:erro "Parâmetros 'ticker' ou 'quantidade' ausentes."})))
+        (resp/bad-request {:erro "Parâmetros 'ticker', 'quantidade' ou 'data' ausentes."})))
 
     (catch Exception e
       (-> (resp/response {:erro "Erro ao processar a compra."
-                          :detalhe (.getMessage e)})
+                      :detalhe (.getMessage e)})
           (resp/status 500)))))
 
 (defn vender [request]
   (try
-    (let [params (:body request)]
-      (if (and (:ticker params) (:quantidade params))
-        (let [transacao (transacao-service/vender (:ticker params) (:quantidade params))]
+    (let [params (:body request)
+          ticker (:ticker params)
+          quantidade (:quantidade params)
+          data (:data params)] 
+      
+      (if (and ticker quantidade data) 
+        (let [transacao (transacao-service/vender ticker quantidade data)]
           (-> (resp/response {:mensagem "Venda registrada com sucesso."
                               :transacao transacao})
               (resp/status 201))) 
-        (resp/bad-request {:erro "Parâmetros 'ticker' ou 'quantidade' ausentes."})))
+        (resp/bad-request {:erro "Parâmetros 'ticker', 'quantidade' ou 'data' ausentes."})))
 
     (catch Exception e
-      (-> (resp/response {:erro "Erro ao processar a venda."
-                          :detalhe (.getMessage e)})
-          (resp/status 500)))))
+      (let [detalhes (ex-data e)]
+        (if (= (:disponivel detalhes) 0) 
+          (-> (resp/response {:erro "Saldo insuficiente para esta venda na data informada."
+                              :detalhe (str "Disponível até " (:data-venda detalhes) ": " (:disponivel detalhes))})
+              (resp/status 400))
+          (-> (resp/response {:erro "Erro ao processar a venda."
+                              :detalhe (.getMessage e)})
+              (resp/status 500)))))))
 
 (defn extrato [request] 
   (try
@@ -48,10 +61,10 @@
       (-> (resp/response {:erro "Erro ao buscar extrato."
                           :detalhe (.getMessage e)})
           (resp/status 500)))))
-
+          
 (defn saldo-ativo [_]
   (try
-    (resp/response (carteira-service/saldo-por-ativo))
+    (resp/response (carteira-service/saldo-por-ativo)) 
     (catch Exception e
       (-> (resp/response {:erro "Erro ao calcular saldo por ativo."
                           :detalhe (.getMessage e)})
