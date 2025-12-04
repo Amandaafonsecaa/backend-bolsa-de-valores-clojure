@@ -1,11 +1,11 @@
 (ns bolsa-de-valores.routes
-  (:require [compojure.core :refer [GET POST defroutes]] ;; defroutes agrupa rotas
+  (:require [compojure.core :refer [GET POST defroutes]]
+            [bolsa-de-valores.services.cotacao-service :as cotacao]
             [bolsa-de-valores.controllers.transacao-controller :as transacao]
-            [compojure.route :as route])) ;; rotas de utilidade (pag. 404)
+            [ring.util.response :refer [response]]
+            [compojure.route :as route]))
 
 (defroutes app-routes
-
-  ;; o request vai desempacotar dados
 
   (POST "/transacoes/compra"  request (transacao/comprar request))
   (POST "/transacoes/venda"   request (transacao/vender request))
