@@ -7,13 +7,12 @@
 
 (def app
   (-> app-routes
-      (wrap-cors :access-control-allow-origin [#"http://localhost:3001"]  ;; middleware
+      (wrap-cors :access-control-allow-origin [#"http://localhost:3001"]
                  :access-control-allow-methods [:get :post :put :delete])          
       
       (wrap-json-body {:keywords? true})
       
       wrap-json-response))
 
-;; !
 (defn -main [& args]
   (run-jetty app {:port 3000 :join? false}))
