@@ -20,8 +20,6 @@
 
 ;; consulta histórica usando a data informada na transação
 (defn consulta-historica
-  "Consulta cotação histórica para um `ticker` em uma `data-str` (string).
-   A função extrai apenas a parte da data (AAAA-MM-DD) caso venha com horário."
   [ticker data-str]
   (let [data (subs data-str 0 10)                                ;; pega só a parte da data
         url  (str config/brapi-api-url
