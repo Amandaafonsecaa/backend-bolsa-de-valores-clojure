@@ -4,26 +4,29 @@
             [ring.util.response :as resp]
             [bolsa-de-valores.services.cotacao-service :as cotacao-service]))
 
+;; !!!!! 
 
+;; req. 2
 (defn comprar [request]
   (try
-    (let [params (:body request)
-          ticker (:ticker params)
+    (let [params (:body request) ;; extrai o corpo da req
+          ticker (:ticker params) 
           quantidade (:quantidade params)
           data (:data params)]
       
       (if (and ticker quantidade data) 
         (let [transacao (transacao-service/comprar ticker quantidade data)]
-          (-> (resp/response {:mensagem "Compra registrada com sucesso."
-                             :transacao transacao})
-              (resp/status 201)))
+          (-> (resp/response {:mensagem "Compra registrada com sucesso." ;; a resp. http
+                             :transacao transacao}) 
+              (resp/status 201))) ;; created
         (resp/bad-request {:erro "Parâmetros 'ticker', 'quantidade' ou 'data' ausentes."})))
 
-    (catch Exception e
+    (catch Exception e ;; erro 
       (-> (resp/response {:erro "Erro ao processar a compra."
                       :detalhe (.getMessage e)})
-          (resp/status 500)))))
+          (resp/status 500))))) ;; internal server error
 
+; req. 3
 (defn vender [request]
   (try
     (let [params (:body request)
@@ -48,12 +51,13 @@
                               :detalhe (.getMessage e)})
               (resp/status 500)))))))
 
+;; req. 4
 (defn extrato [request] 
   (try
     (let [data-inicio (get-in request [:query-params :data_inicio]) 
           data-fim (get-in request [:query-params :data_fim])] 
       
-      (if (or data-inicio data-fim)
+      (if (or data-inicio data-fim) ;; algum param. do fiiltro foi fornecido?
         (resp/response (carteira-service/extrato data-inicio data-fim))
         (resp/response (carteira-service/extrato))))
 
@@ -88,7 +92,7 @@
 
 (defn consultar-dados-acao [req]
   (try
-    (let [ticker (get-in req [:route-params :ticker])]
+    (let [ticker (get-in req [:route-params :ticker])] ;; extrai o ticker
       (if ticker
         (let [detalhes (cotacao-service/consultar-detalhes ticker)]
           (resp/response detalhes))

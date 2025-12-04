@@ -1,13 +1,16 @@
 (ns bolsa-de-valores.services.cotacao-service
   (:require [bolsa-de-valores.external.brapi-external :as brapi]))
 
+  ;; todas são impuras porque chamam o brapi/consulta
+
 (defn consultar-preco [ticker]
   (let [resposta (brapi/consulta ticker)
-        preco    (get-in resposta [:body :results 0 :regularMarketPrice])]
+        preco    (get-in resposta [:body :results 0 :regularMarketPrice])] ;; get-in é pra pegar o valor de uma chave aninhada
     preco))
 
-(defn consultar-detalhes [ticker]
-  (let [resposta (brapi/consulta ticker)]
+;; req. 1 - consultar dados de uma ação
+(defn consultar-detalhes [ticker] 
+  (let [resposta (brapi/consulta ticker)] ;; novamente chamo a api externa pra pegar todos os detalhes 
     {:nome        (get-in resposta [:body :results 0 :longName])
      :nome-curto  (get-in resposta [:body :results 0 :shortName])
      :moeda       (get-in resposta [:body :results 0 :currency])
@@ -24,6 +27,7 @@
     ]
 variacao))
 
+;;cacula o custo total de uma compra hipotética
 (defn simular-compra [ticker qtd]
   (let [resposta      (brapi/consulta ticker)
         preco-unitario (get-in resposta [:body :results 0 :regularMarketPrice])
