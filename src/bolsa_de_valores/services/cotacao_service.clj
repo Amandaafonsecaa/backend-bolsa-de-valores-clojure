@@ -34,10 +34,7 @@
    Tenta primeiro o preço de fechamento do dia; se não encontrar, cai pro preço atual."
   [ticker data-str]
   (let [resposta (brapi/consulta-historica ticker data-str)
-<<<<<<< HEAD
         ;; algumas APIs históricas usam :close como preço de fechamento do dia
-=======
->>>>>>> 794e54d8655e6253e1729adeea6f58d5f935f847
         preco-historico (or (get-in resposta [:body :results 0 :close])
                             (get-in resposta [:body :results 0 :regularMarketPrice]))]
     preco-historico))

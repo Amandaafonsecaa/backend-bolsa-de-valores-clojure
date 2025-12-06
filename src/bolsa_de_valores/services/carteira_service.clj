@@ -107,9 +107,9 @@
     patrimonio-liquido))
 
 (defn lucro-prejuizo-total []
-  (let [valor-atual (bigdec (saldo-total))       ; Garante que VA é BigDecimal
-        dinheiro-vendas (bigdec (valor-total-vendido)) ; Garante que DV é BigDecimal
-        valor-gasto (bigdec (valor-total-investido))    ; Garante que VG é BigDecimal
+  (let [valor-atual  (saldo-total)       ; Garante que VA é BigDecimal
+        dinheiro-vendas (valor-total-vendido) ; Garante que DV é BigDecimal
+        valor-gasto (valor-total-investido)   ; Garante que VG é BigDecimal
         
         _ (println (str "DEBUG - Valor Atual (VA): " valor-atual))
         _ (println (str "DEBUG - Dinheiro Vendas (DV): " dinheiro-vendas))

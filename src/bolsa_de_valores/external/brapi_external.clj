@@ -2,12 +2,8 @@
   (:require [clj-http.client :as http]
             [bolsa-de-valores.config :as config]))
 
-<<<<<<< HEAD
 ;; consulta "atual" (sem considerar data)
 (defn consulta [ticker] ;; ticker é código da ação
-=======
-(defn consulta [ticker]
->>>>>>> 794e54d8655e6253e1729adeea6f58d5f935f847
   (let [url (str config/brapi-api-url ticker)]
     (try 
       (let [response (http/get url {:as :json :throw-exceptions false})]
