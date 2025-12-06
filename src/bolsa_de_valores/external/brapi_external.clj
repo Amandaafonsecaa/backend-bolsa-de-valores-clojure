@@ -1,16 +1,20 @@
 (ns bolsa-de-valores.external.brapi-external
-  (:require [clj-http.client :as http] ;; usado pra fazer req. http
+  (:require [clj-http.client :as http]
             [bolsa-de-valores.config :as config]))
 
+<<<<<<< HEAD
 ;; consulta "atual" (sem considerar data)
 (defn consulta [ticker] ;; ticker é código da ação
+=======
+(defn consulta [ticker]
+>>>>>>> 794e54d8655e6253e1729adeea6f58d5f935f847
   (let [url (str config/brapi-api-url ticker)]
     (try 
-      (let [response (http/get url {:as :json :throw-exceptions false})] ;; json -> map
+      (let [response (http/get url {:as :json :throw-exceptions false})]
         (if (= 200 (:status response))
           response
-          (throw (ex-info "Erro na API Brapi" ;; ex-info cria exceções com dados estruturados
-                          {:ticker ticker ;; chave e valor (hash-map)
+          (throw (ex-info "Erro na API Brapi"
+                          {:ticker ticker
                            :status (:status response)
                            :body (:body response)}))))
       (catch Exception e

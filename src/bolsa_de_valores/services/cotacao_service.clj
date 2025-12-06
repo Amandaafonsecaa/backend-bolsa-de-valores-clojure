@@ -1,16 +1,13 @@
 (ns bolsa-de-valores.services.cotacao-service
   (:require [bolsa-de-valores.external.brapi-external :as brapi]))
 
-  ;; todas são impuras porque chamam o brapi/consulta
-
 (defn consultar-preco [ticker]
   (let [resposta (brapi/consulta ticker)
-        preco    (get-in resposta [:body :results 0 :regularMarketPrice])] ;; get-in é pra pegar o valor de uma chave aninhada
+        preco    (get-in resposta [:body :results 0 :regularMarketPrice])]
     preco))
 
-;; req. 1 - consultar dados de uma ação
 (defn consultar-detalhes [ticker] 
-  (let [resposta (brapi/consulta ticker)] ;; novamente chamo a api externa pra pegar todos os detalhes 
+  (let [resposta (brapi/consulta ticker)]
     {:nome        (get-in resposta [:body :results 0 :longName])
      :nome-curto  (get-in resposta [:body :results 0 :shortName])
      :moeda       (get-in resposta [:body :results 0 :currency])
@@ -37,7 +34,10 @@
    Tenta primeiro o preço de fechamento do dia; se não encontrar, cai pro preço atual."
   [ticker data-str]
   (let [resposta (brapi/consulta-historica ticker data-str)
+<<<<<<< HEAD
         ;; algumas APIs históricas usam :close como preço de fechamento do dia
+=======
+>>>>>>> 794e54d8655e6253e1729adeea6f58d5f935f847
         preco-historico (or (get-in resposta [:body :results 0 :close])
                             (get-in resposta [:body :results 0 :regularMarketPrice]))]
     preco-historico))
