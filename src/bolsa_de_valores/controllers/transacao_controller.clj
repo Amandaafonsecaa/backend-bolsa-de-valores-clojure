@@ -82,9 +82,9 @@
                           :detalhe (.getMessage e)})
           (resp/status 500)))))
 
-(defn patrimonio [_]
+(defn patrimonio-liquido [_]
   (try
-    (resp/response {:patrimonio_liquido (carteira-service/saldo-total)})
+    (resp/response {:patrimonio_liquido (carteira-service/patrimonio-liquido)})
     (catch Exception e
       (-> (resp/response {:erro "Erro ao calcular patrimônio líquido."
                           :detalhe (.getMessage e)})
@@ -99,5 +99,37 @@
         (resp/bad-request {:erro "o parâmetro ticker tá ausente"})))
     (catch Exception e 
       (-> (resp/response {:erro "erro ao buscar detalhes da ação"
+                          :detalhe (.getMessage e)})
+          (resp/status 500)))))
+
+(defn lucro-prejuizo-total [_]
+  (try
+    (resp/response (carteira-service/lucro-prejuizo-total))
+    (catch Exception e 
+      (-> (resp/response {:erro "Erro ao calcular lucro/prejuizo"
+                          :detalhe (.getMessage e)})
+          (resp/status 500)))))
+
+(defn saldo-total [_]
+  (try
+    (resp/response {:saldo_total (carteira-service/saldo-total)})
+    (catch Exception e 
+      (-> (resp/response {:erro "Erro ao calcular saldo total"
+                          :detalhe (.getMessage e)})
+          (resp/status 500)))))
+
+(defn valor-total-investido[_]
+  (try
+    (resp/response {:valor_total_investido (carteira-service/valor-total-investido)})
+    (catch Exception e 
+      (-> (resp/response {:erro "Erro ao calcular valor total investido"
+                          :detalhe (.getMessage e)})
+          (resp/status 500)))))
+
+(defn patrimonio-total [_]
+  (try
+    (resp/response {:patrimonio_total (carteira-service/patrimonio-total)})
+    (catch Exception e
+      (-> (resp/response {:erro "Erro ao calcular patrimônio total."
                           :detalhe (.getMessage e)})
           (resp/status 500)))))

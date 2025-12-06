@@ -12,14 +12,19 @@
 
 ;; req. 2 !
 (defn comprar [ticker quantidade data-str]
-   (let [preco-unitario (cotacao/consultar-preco ticker) ;; preço atual da ação
+   (let [data (formatar-data data-str) ;; formata/define a data da transação
+         ;; se o usuário informou uma data, tentamos buscar o preço histórico;
+         ;; caso contrário, usamos o preço atual.
+         preco-unitario (if data-str
+                          (cotacao/consultar-preco-na-data ticker data)
+                          (cotacao/consultar-preco ticker))
 
-        _ (when (nil? preco-unitario) 
-                  (throw (ex-info "Cotação não encontrada. Verifique o ticker ou a disponibilidade da API externa."
-                                    {:ticker ticker
-                                    :erro "Preço unitário nulo"})))
+         _ (when (nil? preco-unitario) 
+             (throw (ex-info "Cotação não encontrada. Verifique o ticker, a data ou a disponibilidade da API externa."
+                             {:ticker ticker
+                              :data   data
+                              :erro   "Preço unitário nulo"})))
          total (* preco-unitario quantidade) ;; calc. do total
-         data (formatar-data data-str) ;; formatação
          transacao {:ticker ticker ;; mapa imutável 
                     :tipo :compra
                     :quantidade quantidade
@@ -43,7 +48,11 @@
                              :tentativa quantidade
                              :disponivel saldo-atual})))
         
-        preco-unitario (cotacao/consultar-preco ticker)
+        ;; na venda seguimos a mesma regra da compra: se há data, tentamos histórico;
+        ;; se não, usamos o preço atual.
+        preco-unitario (if data-str
+                         (cotacao/consultar-preco-na-data ticker data)
+                         (cotacao/consultar-preco ticker))
         total (* preco-unitario quantidade)
         
         transacao {:ticker ticker

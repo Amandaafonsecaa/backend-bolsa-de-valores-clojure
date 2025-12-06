@@ -23,13 +23,21 @@
 
 (defn consultar-variacao-dia [ticker]
     (let [resposta (brapi/consulta ticker)
-        variacao (get-in resposta [:body :results 0 :regularMarketChangePercent])
-    ]
-variacao))
+          variacao  (get-in resposta [:body :results 0 :regularMarketChangePercent])]
+      variacao))
 
-;;cacula o custo total de uma compra hipotética
 (defn simular-compra [ticker qtd]
   (let [resposta      (brapi/consulta ticker)
         preco-unitario (get-in resposta [:body :results 0 :regularMarketPrice])
         preco-total    (* preco-unitario qtd)]
     preco-total))
+
+(defn consultar-preco-na-data
+  "Consulta o preço de `ticker` na data `data-str`.
+   Tenta primeiro o preço de fechamento do dia; se não encontrar, cai pro preço atual."
+  [ticker data-str]
+  (let [resposta (brapi/consulta-historica ticker data-str)
+        ;; algumas APIs históricas usam :close como preço de fechamento do dia
+        preco-historico (or (get-in resposta [:body :results 0 :close])
+                            (get-in resposta [:body :results 0 :regularMarketPrice]))]
+    preco-historico))

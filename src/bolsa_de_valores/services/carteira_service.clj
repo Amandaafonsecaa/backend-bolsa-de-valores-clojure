@@ -62,17 +62,77 @@
                    agrupado-por-ticker))))) ;; transformando a lista de pares em um mapa
 
 (defn valor-total-investido []
-  (let [compras (filter #(= (:tipo %) :compra) (repositorio/listar))] ;; apenas do tipo compra
-    (reduce + 0 (map :total compras))))
+  ; somar o total gasto em compras, se comprar 100 acoes cada uma a 10 reais , total investido = 1000, se vender nao diminui o valor investido
+  (let [compras (filter #(= (:tipo %) :compra) (repositorio/listar))] 
+    (reduce + 0M (map :total compras))))
 
-;; req. 5
+(defn valor-total-vendido []
+  ; somar o total ganho em vendas, se comprar 100 acoes cada uma a 10 reais , total investido = 1000, se vender nao diminui o valor investido
+  (let [vendas (filter #(= (:tipo %) :venda) (repositorio/listar))] 
+    (reduce + 0 (map :total vendas))))
+
+
 (defn saldo-total []
   (let [saldos (saldo-por-ativo)]
-    (reduce (fn [valor-acc [ticker qtd]] ;; somar o valor de mercado de cada ativo
-              (if (pos? qtd) ;; é positivo?
-                (let [preco-atual (cotacao/consultar-preco ticker)
-                      valor-ativo (* preco-atual qtd)]
+    (reduce (fn [valor-acc [ticker qtd]]
+              (if (pos? qtd) 
+                (let [;; Tenta obter a cotação. Se falhar ou for nil/0, trata como 0M.
+                      preco-bruto (cotacao/consultar-preco ticker)
+                      
+                      ;; Garante que o preco é BigDecimal antes de qualquer multiplicação
+                      preco-atual (if (some? preco-bruto) (bigdec preco-bruto) 0M)
+                      
+                      ;; A quantidade também deve ser BigDecimal para o cálculo correto
+                      qtd-bigdec (bigdec qtd)
+                      
+                      valor-ativo (* preco-atual qtd-bigdec)]
+                  
                   (+ valor-acc valor-ativo))
-                valor-acc)) ;; se for zero ou neg, mantêm o acc
-            0
+                valor-acc)) 
+            0M ; <-- Inicializa o acumulador como BigDecimal (0M)
             saldos)))
+
+(defn patrimonio-total []
+  (let [dinheiro-venda (valor-total-vendido)
+        saldo-total (saldo-total)
+        _ (println (str "DEBUG - Saldo Total: " saldo-total))
+        _ (println (str "DEBUG - Dinheiro Venda: " dinheiro-venda))
+        patrimonio-atual (+ saldo-total dinheiro-venda)]
+        patrimonio-atual))
+
+(defn patrimonio-liquido []
+  (let [patrimonio (patrimonio-total)
+        _ (println (str "DEBUG - Patrimonio Total: " patrimonio))
+        valor-investido (valor-total-investido)
+        _ (println (str "DEBUG - Valor Total Investido: " valor-investido))
+        patrimonio-liquido (- patrimonio valor-investido)]
+    patrimonio-liquido))
+
+(defn lucro-prejuizo-total []
+  (let [valor-atual (bigdec (saldo-total))       ; Garante que VA é BigDecimal
+        dinheiro-vendas (bigdec (valor-total-vendido)) ; Garante que DV é BigDecimal
+        valor-gasto (bigdec (valor-total-investido))    ; Garante que VG é BigDecimal
+        
+        _ (println (str "DEBUG - Valor Atual (VA): " valor-atual))
+        _ (println (str "DEBUG - Dinheiro Vendas (DV): " dinheiro-vendas))
+        _ (println (str "DEBUG - Valor Gasto (VG): " valor-gasto))
+        
+        patrimonio-total (+ valor-atual dinheiro-vendas)
+        
+        _ (println (str "DEBUG - Patrimonio Total (VA+DV): " patrimonio-total))
+        
+        diferenca (- patrimonio-total valor-gasto)
+        
+        _ (println (str "DEBUG - Diferenca (P&L): " diferenca))
+        
+        eh-lucro? (pos? diferenca)
+        
+        percentual-bruto (if (pos? valor-gasto)
+                           (* 100M (/ diferenca valor-gasto)) ; Use 100M para forçar o cálculo BigDecimal
+                           0M)
+        
+        _ (println (str "DEBUG - Percentual Bruto (%): " percentual-bruto))]
+    
+    {:valor-reais (double diferenca) 
+     :percentual (double percentual-bruto) 
+     :eh-lucro? eh-lucro?}))
