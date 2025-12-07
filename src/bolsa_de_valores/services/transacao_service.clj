@@ -10,9 +10,7 @@
     (str (LocalDateTime/now))))
 
 (defn comprar [ticker quantidade data-str]
-   (let [data (formatar-data data-str) ;; formata/define a data da transação
-         ;; se o usuário informou uma data, tentamos buscar o preço histórico;
-         ;; caso contrário, usamos o preço atual.
+   (let [data (formatar-data data-str) 
          preco-unitario (if data-str
                           (cotacao/consultar-preco-na-data ticker data)
                           (cotacao/consultar-preco ticker))
@@ -22,8 +20,8 @@
                              {:ticker ticker
                               :data   data
                               :erro   "Preço unitário nulo"})))
-         total (* preco-unitario quantidade) ;; calc. do total
-         transacao {:ticker ticker ;; mapa imutável 
+         total (* (bigdec preco-unitario) (bigdec quantidade)) 
+         transacao {:ticker ticker  
                     :tipo :compra
                     :quantidade quantidade
                     :preco preco-unitario
@@ -34,7 +32,6 @@
 
 (defn vender [ticker quantidade data-str]
   (let [data (formatar-data data-str)
-        
         saldo-por-ativo-map (carteira/saldo-por-ativo data)
         saldo-atual (get saldo-por-ativo-map ticker 0)
         _ (when (> quantidade saldo-atual)
@@ -43,13 +40,10 @@
                              :data-venda data
                              :tentativa quantidade
                              :disponivel saldo-atual})))
-        
-        ;; na venda seguimos a mesma regra da compra: se há data, tentamos histórico;
-        ;; se não, usamos o preço atual.
         preco-unitario (if data-str
                          (cotacao/consultar-preco-na-data ticker data)
                          (cotacao/consultar-preco ticker))
-        total (* preco-unitario quantidade)
+        total (* (bigdec preco-unitario) (bigdec quantidade))
         
         transacao {:ticker ticker
                    :tipo :venda

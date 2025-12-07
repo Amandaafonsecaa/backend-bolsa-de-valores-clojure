@@ -83,14 +83,12 @@
                    agrupado-por-ticker)))))
 
 (defn valor-total-investido []
-  ; somar o total gasto em compras, se comprar 100 acoes cada uma a 10 reais , total investido = 1000, se vender nao diminui o valor investido
   (let [compras (filter #(= (:tipo %) :compra) (repositorio/listar))] 
     (reduce + 0M (map :total compras))))
 
 (defn valor-total-vendido []
-  ; somar o total ganho em vendas, se comprar 100 acoes cada uma a 10 reais , total investido = 1000, se vender nao diminui o valor investido
   (let [vendas (filter #(= (:tipo %) :venda) (repositorio/listar))] 
-    (reduce + 0 (map :total vendas))))
+    (reduce + 0M (map :total vendas))))
 
 
 (defn saldo-total []

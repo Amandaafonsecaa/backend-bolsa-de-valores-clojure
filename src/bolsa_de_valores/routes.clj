@@ -15,13 +15,11 @@
   (GET "/cotacao/:ticker" [ticker] 
     (response (cotacao/consultar-detalhes ticker)))
   
-  (GET "/carteira/saldo" [] (transacao/saldo-ativo nil)) ; QTD DE ACOES Q ELE TEM
+  (GET "/carteira/saldo" [] (transacao/saldo-ativo nil)) 
   (GET "/carteira/saldototal" [] (transacao/saldo-total nil)) 
-  ; saldo total -> valor em reais que é o valor de todas as ações que ele possui
-  (GET "/carteira/investido" [] (transacao/valor-investido nil))
-  (GET "/transacoes/patrimonio-total" [] (transacao/patrimonio-total nil))
-  (GET "/transacoes/patrimonio-liquido" [] (transacao/patrimonio-liquido nil))
+  (GET "/carteira/patrimonio-total" [] (transacao/patrimonio-total nil))
+  (GET "/carteira/patrimonio-liquido" [] (transacao/patrimonio-liquido nil))
   (GET "/carteira/lucroprejuizo" [] (transacao/lucro-prejuizo-total nil))
-  (GET "/carteira/valor-total-investido" [] (transacao/valor-total-investido nil)) ; Saldo (todo dinheiro ja gasto para comprar acao)
+  (GET "/carteira/valor-total-investido" [] (transacao/valor-total-investido nil))
 
   (route/not-found "Rota não encontrada"))

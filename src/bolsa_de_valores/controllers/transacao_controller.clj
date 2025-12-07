@@ -68,14 +68,6 @@
                           :detalhe (.getMessage e)})
           (resp/status 500)))))
 
-(defn valor-investido [_]
-  (try
-    (resp/response {:valor_total_investido (carteira-service/valor-total-investido)})
-    (catch Exception e
-      (-> (resp/response {:erro "Erro ao calcular valor total investido."
-                          :detalhe (.getMessage e)})
-          (resp/status 500)))))
-
 (defn patrimonio-liquido [_]
   (try
     (resp/response {:patrimonio_liquido (carteira-service/patrimonio-liquido)})
