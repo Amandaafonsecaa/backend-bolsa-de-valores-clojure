@@ -49,11 +49,11 @@
 (defn extrato [request] 
   (try
     (let [data-inicio (get-in request [:query-params :data_inicio]) 
-          data-fim (get-in request [:query-params :data_fim])] 
+          data-fim (get-in request [:query-params :data_fim])
+          pagina (some-> (get-in request [:query-params :pagina]) Integer/parseInt)
+          limite (some-> (get-in request [:query-params :limite]) Integer/parseInt)] 
       
-      (if (or data-inicio data-fim)
-        (resp/response (carteira-service/extrato data-inicio data-fim))
-        (resp/response (carteira-service/extrato))))
+      (resp/response (carteira-service/extrato pagina limite data-inicio data-fim)))
 
     (catch Exception e
       (-> (resp/response {:erro "Erro ao buscar extrato."

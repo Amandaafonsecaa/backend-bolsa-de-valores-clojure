@@ -36,10 +36,33 @@
           transacoes))
 
 (defn extrato 
-  ([] (repositorio/listar))
+  ([pagina limite data-inicio-str data-fim-str]
+   (let [todas-transacoes (repositorio/listar)
+         transacoes-filtradas (filtrar-por-periodo todas-transacoes data-inicio-str data-fim-str)
+         
+         limite (or limite 10)
+         pagina (or pagina 1)
+         
+         todas-transacoes-filtradas-revertidas (reverse transacoes-filtradas)
+         
+         offset (* (dec pagina) limite)
+         
+         transacoes-paginadas (->> todas-transacoes-filtradas-revertidas
+                                   (drop offset)
+                                   (take limite))
+         
+         total-itens (count transacoes-filtradas)
+         total-paginas (int (Math/ceil (/ total-itens limite)))]
+     
+     {:transacoes transacoes-paginadas
+      :total-itens total-itens
+      :total-paginas total-paginas}))
+  
   ([data-inicio-str data-fim-str]
-   (let [transacoes (repositorio/listar)]
-     (filtrar-por-periodo transacoes data-inicio-str data-fim-str))))
+   (extrato 1 10 data-inicio-str data-fim-str))
+  
+  ([]
+   (extrato 1 10 nil nil)))
 
 (defn saldo-por-ativo 
   ([] (saldo-por-ativo nil))
